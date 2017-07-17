@@ -7,8 +7,14 @@ exports.handler = function(event, context) {
 
   console.log("Received " + records.length + " records.")
 
+  if (process.env.DEBUG_LOGGING === "true") {
+    console.log(`Received event data: ${JSON.stringify(records)}`);
+  }
+
   if (process.env.SKIP_SEND === "true") {
-    console.log(`SKIPPING SEND, received event data: ${JSON.stringify(records)}`);
+    if (process.env.DEBUG_LOGGING === "true") {
+      console.log(`SKIPPING SEND`);
+    }
   } else {
     var fileName = "/tmp/" + context.invokeid + ".json";
 
