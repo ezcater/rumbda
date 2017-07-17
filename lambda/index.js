@@ -5,17 +5,14 @@ exports.handler = function(event, context) {
   var records = event.Records;
   var context = context;
 
-  console.log("Received " + records.length + " records.")
+  var verb = process.env.SKIP_SEND === "true" ? "SKIPPING " : "Received ";
+  console.log(verb + records.length + " records.")
 
   if (process.env.DEBUG_LOGGING === "true") {
-    console.log(`Received event data: ${JSON.stringify(records)}`);
+    console.log(`DEBUG: Received event data: ${JSON.stringify(records)}`);
   }
 
-  if (process.env.SKIP_SEND === "true") {
-    if (process.env.DEBUG_LOGGING === "true") {
-      console.log(`SKIPPING SEND`);
-    }
-  } else {
+  if (process.env.SKIP_SEND !== "true") {
     var fileName = "/tmp/" + context.invokeid + ".json";
 
     fs.writeFile(fileName, JSON.stringify(records), (err) => {
