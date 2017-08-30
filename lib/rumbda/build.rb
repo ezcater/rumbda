@@ -20,7 +20,7 @@ module Rumbda
       FileUtils.cp(File.join(dir_to_build, '..', 'Gemfile.lock'), vendor_dir)
 
       Dir.chdir(TEMP_DIRECTORY_NAME) do
-        bundle_install(vendor_dir)
+        bundle_install(vendor_dir, options["function_name"])
 
         if Dir.exist?('ruby')
           puts "Found traveling ruby in #{TEMP_DIRECTORY_NAME}, skipping download."
@@ -75,12 +75,16 @@ module Rumbda
       FileUtils.chmod(0755, destination)
     end
 
-    def self.bundle_install(dir_with_gemfile)
+    def self.bundle_install(dir_with_gemfile, group)
+      # Ideally we could use the `--with` option for bundler, but we're stuck on an old version
+      # thanks to travelling ruby.
+      without_groups = Bundler.load.current_dependencies.map(&:groups).flatten.uniq - [:default, group.to_sym]
+
       puts 'Installing bundle.'
       Bundler.with_clean_env do
         success = system(
           "cd #{dir_with_gemfile} && " \
-          'env BUNDLE_IGNORE_CONFIG=1 bundle install --path . --without development'
+          "env BUNDLE_IGNORE_CONFIG=1 bundle install --path . --without #{without_groups.join(" ")}"
         )
 
         abort('Bundle install failed, exiting.') unless success
