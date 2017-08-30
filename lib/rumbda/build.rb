@@ -16,8 +16,8 @@ module Rumbda
       FileUtils.mkdir_p(dest_source_code_dir)
       FileUtils.mkdir_p(vendor_dir)
       FileUtils.cp_r(Dir.glob(File.join(dir_to_build, '*')) - [temp_dir], dest_source_code_dir)
-      FileUtils.mv(File.join(dest_source_code_dir, 'Gemfile'), vendor_dir)
-      FileUtils.mv(File.join(dest_source_code_dir, 'Gemfile.lock'), vendor_dir)
+      FileUtils.cp(File.join(dir_to_build, '..', 'Gemfile'), vendor_dir)
+      FileUtils.cp(File.join(dir_to_build, '..', 'Gemfile.lock'), vendor_dir)
 
       Dir.chdir(TEMP_DIRECTORY_NAME) do
         bundle_install(vendor_dir)
@@ -126,14 +126,6 @@ module Rumbda
     def self.check_for_files(dir_to_build)
       unless File.exist?(File.join(dir_to_build, 'main.rb'))
         abort("Must have a file named 'main.rb' in #{dir_to_build}")
-      end
-
-      unless File.exist?(File.join(dir_to_build, 'Gemfile'))
-        abort("Must have a file named 'Gemfile' in #{dir_to_build}")
-      end
-
-      unless File.exist?(File.join(dir_to_build, 'Gemfile.lock'))
-        abort("Must have a file named 'Gemfile.lock' in #{dir_to_build}")
       end
     end
   end
