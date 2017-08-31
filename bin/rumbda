@@ -5,6 +5,7 @@ require 'rumbda'
 class RumbdaCLI < Thor
   desc 'build', 'Builds the zip file for lambda.'
   method_option 'cleanup', type: :boolean, aliases: '-c'
+  method_option 'function_name', type: :string, aliases: '-f'
   def build(dir_to_build = FileUtils.pwd)
     Rumbda::Build.run(dir_to_build, options)
   end
